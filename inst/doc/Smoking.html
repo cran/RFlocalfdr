@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Rob Dunne" />
+
+
+<title>Smoking data</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Smoking data</h1>
+<h4 class="author">Rob Dunne</h4>
+<h4 class="date">Saturday, August 8, 2020</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#load-the-data" id="toc-load-the-data">load the
+data</a></li>
+<li><a href="#fit-a-ranger-model" id="toc-fit-a-ranger-model">fit a
+ranger model</a></li>
+<li><a href="#determine-a-cutoff-to-get-a-unimodal-density." id="toc-determine-a-cutoff-to-get-a-unimodal-density.">Determine a
+cutoff to get a unimodal density.</a></li>
+<li><a href="#fit-rflocalfdr" id="toc-fit-rflocalfdr">fit
+RFlocalfdr</a></li>
+</ul>
+</div>
+
+<p>A small example using the smoking data set, containing normalized
+transcript measurements for 51 subjects (23 “never-smoked” and 34
+“smokers”) and 22283 transcripts of lung tissue. See <span class="citation">Spira et al. (2004)</span></p>
+<p>I have removed that data set temporarily until I solve a problem with
+upload the package to CRAN</p>
+<div id="load-the-data" class="section level1">
+<h1>load the data</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(RFlocalfdr.data)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">data</span>(smoking)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>?smoking </span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>y<span class="ot">&lt;-</span>smoking<span class="sc">$</span>y</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>smoking_data<span class="ot">&lt;-</span>smoking<span class="sc">$</span>rma</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>y.numeric <span class="ot">&lt;-</span><span class="fu">ifelse</span>((y<span class="sc">==</span><span class="st">&quot;never-smoked&quot;</span>),<span class="dv">0</span>,<span class="dv">1</span>)</span></code></pre></div>
+</div>
+<div id="fit-a-ranger-model" class="section level1">
+<h1>fit a ranger model</h1>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(ranger)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>rf1 <span class="ot">&lt;-</span><span class="fu">ranger</span>(<span class="at">y=</span>y.numeric ,<span class="at">x=</span>smoking_data,<span class="at">importance=</span><span class="st">&quot;impurity&quot;</span>,<span class="at">seed=</span><span class="dv">123</span>, <span class="at">num.trees =</span> <span class="dv">10000</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>             <span class="at">classification=</span><span class="cn">TRUE</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>t2 <span class="ot">&lt;-</span><span class="fu">count_variables</span>(rf1)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>imp<span class="ot">&lt;-</span><span class="fu">log</span>(rf1<span class="sc">$</span>variable.importance)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#png(&quot;./supp_figures/smoking_log_importances.png&quot;)</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(imp),<span class="at">xlab=</span><span class="st">&quot;log importances&quot;</span>,<span class="at">main=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#dev.off()</span></span></code></pre></div>
+<!-- ```{r log_importances, echo=FALSE, fig.cap="", fig.align="center", out.width = '50%'} -->
+<!-- #knitr::include_graphics("./supp_figures/smoking_log_importances.png") -->
+<!-- knitr::include_graphics("./supp_figures/smoking_data_determine_cutoff.png") -->
+<!-- ``` -->
+<div class="figure" style="text-align: center">
+<img src="data:image/png;base64,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" alt="A small simulated data set. Each band contains blocks of size {1, 2, 4, 8, 16, 32, 64}, and each block consists of correlated (identical variables)." width="50%" />
+<p class="caption">
+A small simulated data set. Each band contains blocks of size {1, 2, 4,
+8, 16, 32, 64}, and each block consists of correlated (identical
+variables).
+</p>
+</div>
+</div>
+<div id="determine-a-cutoff-to-get-a-unimodal-density." class="section level1">
+<h1>Determine a cutoff to get a unimodal density.</h1>
+<p>See @ref(fig:log_importances) for the log importances. They are
+clearly multimodal and we try to determine a cutoff so that we are left
+with a unimodal distribution.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>cutoffs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#png(&quot;./supp_figures/smoking_data_determine_cutoff.png&quot;)</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>res.con<span class="ot">&lt;-</span> <span class="fu">determine_cutoff</span>(imp,t2,<span class="at">cutoff=</span>cutoffs,<span class="at">plot=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>))</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#dev.off()</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#png(&quot;./supp_figures/smoking_data_determine_cutoffs_2.png&quot;)</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="fu">plot</span>(cutoffs,res.con[,<span class="dv">3</span>],<span class="at">pch=</span><span class="dv">15</span>,<span class="at">col=</span><span class="st">&quot;red&quot;</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">ylab=</span><span class="st">&quot;max(abs(y - t1))&quot;</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#dev.off()</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>cutoffs[<span class="fu">which.min</span>(res.con[,<span class="dv">3</span>])]</span></code></pre></div>
+<!-- ```{r smoking_data_determine_cutoff, echo=FALSE, fig.align="center", fig.show='hold', fig.cap="", out.width = '40%', out.height = '40%'} -->
+<!-- knitr::include_graphics("./supp_figures/smoking_data_determine_cutoff.png") -->
+<!-- knitr::include_graphics("./supp_figures/smoking_data_determine_cutoffs_2.png") -->
+<!-- ``` -->
+<!-- why cant I get them side by side -->
+<!-- https://stackoverflow.com/questions/25415365/insert-side-by-side-png-images-using-knitr -->
+</div>
+<div id="fit-rflocalfdr" class="section level1">
+<h1>fit RFlocalfdr</h1>
+<p>We select a cutoff of 3 and fit the RFlocalfdr model</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>temp<span class="ot">&lt;-</span>imp[t2 <span class="sc">&gt;</span> <span class="dv">3</span>]</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>temp <span class="ot">&lt;-</span> temp <span class="sc">-</span> <span class="fu">min</span>(temp) <span class="sc">+</span> .Machine<span class="sc">$</span>double.eps</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>qq <span class="ot">&lt;-</span> <span class="fu">plotQ</span>(temp,<span class="at">debug.flag =</span> <span class="dv">1</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>ppp<span class="ot">&lt;-</span><span class="fu">run.it.importances</span>(qq,temp,<span class="at">debug.flag =</span> <span class="dv">0</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="fu">png</span>(<span class="st">&quot;./supp_figures/smoking_significant_genes.png&quot;</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#aa&lt;-significant.genes(ppp,temp,cutoff=0.05,do.plot=1)</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>aa<span class="ot">&lt;-</span><span class="fu">significant.genes</span>(ppp,temp,<span class="at">cutoff=</span><span class="fl">0.05</span>,<span class="at">debug.flag=</span><span class="dv">0</span>,<span class="at">do.plot=</span><span class="cn">TRUE</span>,<span class="at">use_95_q=</span><span class="cn">TRUE</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="fu">length</span>(aa<span class="sc">$</span>probabilities) <span class="co"># 17</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>aa<span class="ot">&lt;-</span><span class="fu">significant.genes</span>(ppp,temp,<span class="at">cutoff=</span><span class="fl">0.05</span>,<span class="at">debug.flag=</span><span class="dv">0</span>,<span class="at">do.plot=</span><span class="cn">TRUE</span>,<span class="at">use_95_q=</span><span class="cn">FALSE</span>)</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="fu">length</span>(aa<span class="sc">$</span>probabilities) <span class="co"># 19</span></span></code></pre></div>
+<p>The option <strong>do.plot=1</strong> returns a plot containing
+the</p>
+<ul>
+<li>histogram of the importances in magenta</li>
+<li>fdr in black – axis scale on right</li>
+<li>alpha value for significance – axis scale on right</li>
+</ul>
+<p>The option <strong>do.plot=2</strong> returns the same plot with the
+addition of</p>
+<ul>
+<li>fitted curve using estimates_C_0.95 in red</li>
+<li>0.95 quantile of the fitted distribution, also in red</li>
+<li>cutoff for significant genes (in orange)</li>
+<li>abline(v = object$C_0.95, lwd = 2, col = “blue”) what are these</li>
+<li>abline(v = object$cc, lwd = 2, col = “purple”)</li>
+</ul>
+<!-- ```{r smoking_significant_genes, echo=FALSE, fig.cap="", fig.align="center", out.width = '50%'} -->
+<!-- knitr::include_graphics("./supp_figures/smoking_significant_genes.png") -->
+<!-- ``` -->
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;parsifal9/RFlocalfdr&quot;</span>, <span class="at">build_vignettes =</span> <span class="cn">TRUE</span>, <span class="at">force =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">library</span>(RFlocalfdr)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="fu">data</span>(smoking)</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>?smoking </span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>y<span class="ot">&lt;-</span>smoking<span class="sc">$</span>y</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>smoking_data<span class="ot">&lt;-</span>smoking<span class="sc">$</span>rma</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>y.numeric <span class="ot">&lt;-</span><span class="fu">ifelse</span>((y<span class="sc">==</span><span class="st">&quot;never-smoked&quot;</span>),<span class="dv">0</span>,<span class="dv">1</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="fu">library</span>(ranger)</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>rf1 <span class="ot">&lt;-</span><span class="fu">ranger</span>(<span class="at">y=</span>y.numeric ,<span class="at">x=</span>smoking_data,<span class="at">importance=</span><span class="st">&quot;impurity&quot;</span>,<span class="at">seed=</span><span class="dv">123</span>, <span class="at">num.trees =</span> <span class="dv">10000</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>             <span class="at">classification=</span><span class="cn">TRUE</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>t2 <span class="ot">&lt;-</span><span class="fu">count_variables</span>(rf1)</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>imp<span class="ot">&lt;-</span><span class="fu">log</span>(rf1<span class="sc">$</span>variable.importance)</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#png(&quot;./supp_figures/smoking_log_importances.png&quot;)</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(imp),<span class="at">xlab=</span><span class="st">&quot;log importances&quot;</span>,<span class="at">main=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#dev.off()</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>cutoffs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>)</span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#png(&quot;./supp_figures/smoking_data_determine_cutoff.png&quot;)</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>res.con<span class="ot">&lt;-</span> <span class="fu">determine_cutoff</span>(imp,t2,<span class="at">cutoff=</span>cutoffs,<span class="at">plot=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>))</span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#dev.off()</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co">#png(&quot;./supp_figures/smoking_data_determine_cutoffs_2.png&quot;)</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a><span class="fu">plot</span>(cutoffs,res.con[,<span class="dv">3</span>],<span class="at">pch=</span><span class="dv">15</span>,<span class="at">col=</span><span class="st">&quot;red&quot;</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">ylab=</span><span class="st">&quot;max(abs(y - t1))&quot;</span>)</span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co">#dev.off()</span></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>cutoffs[<span class="fu">which.min</span>(res.con[,<span class="dv">3</span>])]</span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>temp<span class="ot">&lt;-</span>imp[t2 <span class="sc">&gt;</span> <span class="dv">3</span>]</span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>temp <span class="ot">&lt;-</span> temp <span class="sc">-</span> <span class="fu">min</span>(temp) <span class="sc">+</span> .Machine<span class="sc">$</span>double.eps</span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>qq <span class="ot">&lt;-</span> <span class="fu">plotQ</span>(temp,<span class="at">debug.flag =</span> <span class="dv">1</span>)</span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>ppp<span class="ot">&lt;-</span><span class="fu">run.it.importances</span>(qq,temp,<span class="at">debug.flag =</span> <span class="dv">0</span>)</span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a></span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a><span class="co">#png(&quot;./supp_figures/smoking_significant_genes.png&quot;)</span></span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a><span class="co">#aa&lt;-significant.genes(ppp,temp,cutoff=0.05,do.plot=1)</span></span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a>aa<span class="ot">&lt;-</span><span class="fu">significant.genes</span>(ppp,temp,<span class="at">cutoff=</span><span class="fl">0.05</span>,<span class="at">debug.flag=</span><span class="dv">0</span>,<span class="at">do.plot=</span><span class="cn">TRUE</span>,<span class="at">use_95_q=</span><span class="cn">TRUE</span>)</span>
+<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a><span class="co">#dev.off()</span></span>
+<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a><span class="fu">length</span>(aa<span class="sc">$</span>probabilities) <span class="co"># 17  -- Roc gets 30</span></span>
+<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a></span>
+<span id="cb6-44"><a href="#cb6-44" tabindex="-1"></a>aa<span class="ot">&lt;-</span><span class="fu">significant.genes</span>(ppp,temp,<span class="at">cutoff=</span><span class="fl">0.05</span>,<span class="at">debug.flag=</span><span class="dv">0</span>,<span class="at">do.plot=</span><span class="cn">TRUE</span>,<span class="at">use_95_q=</span><span class="cn">FALSE</span>)</span>
+<span id="cb6-45"><a href="#cb6-45" tabindex="-1"></a><span class="fu">length</span>(aa<span class="sc">$</span>probabilities) <span class="co"># 19-- Roc gets 30</span></span></code></pre></div>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Spira.et.al.2004" class="csl-entry">
+Spira, A. E., J. Beane, V. Pinto-Plata, A. Kadar, G. Liu, V. Shah, B.
+Celli, and J. S. Brody. 2004. <span>“Gene Expression Profiling of Human
+Lung Tissue from Smokers with Severe Emphysema.”</span> <em>Am J Respir
+Cell Mol Biol.</em>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

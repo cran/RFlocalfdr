@@ -1,0 +1,222 @@
+---
+title: "Smoking data"
+author: "Rob Dunne"
+date: "Saturday, August  8, 2020"
+output: 
+     rmarkdown::html_vignette:
+       toc: true
+       toc_depth: 2
+vignette: >
+  %\VignetteIndexEntry{Smoking data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: paper.bib
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+  )
+knitr::opts_chunk$set(fig.width=6, fig.height=6, dpi=300,echo = FALSE)
+knitr::opts_chunk$set(fig.pos = "H", out.extra = "")
+
+```
+A small example using the smoking  data set, containing normalized transcript measurements for 51 subjects (23 "never-smoked" and 34 "smokers")
+and 22283 transcripts of lung tissue. See @Spira.et.al.2004
+
+
+I have removed that data set temporarily until I solve a problem with upload the package to CRAN
+
+
+# load the data
+```{r, echo=TRUE, eval=FALSE}
+library(RFlocalfdr.data)
+data(smoking)
+?smoking 
+y<-smoking$y
+smoking_data<-smoking$rma
+y.numeric <-ifelse((y=="never-smoked"),0,1)
+
+```
+
+```{r, echo=FALSE, eval=FALSE}
+install.packages("geneExpressionFromGEO")
+library(geneExpressionFromGEO)
+DF1 <- getGeneExpressionFromGEO("GSE994", FALSE, FALSE)  #retrieveGeneSymbols, verbose = FALSE)
+
+aa<-match(gsub("([A-Z0-9]*).*","\\1", rownames(smoking_data)), colnames(DF1))
+all.equal(aa,1:57)
+$[1] TRUE
+
+temp <- t(DF1[1:57])
+#but class temp is a data.frame not a ‘AffyBatch’ object. So how do we normalize it?
+
+## library(affy)
+## rma.data <- rma(data)
+## or
+## rma.data <- expresso(data,
+## bgcorrect.method = "rma",
+## normalize.method = "quantiles",
+## pmcorrect.method = "pmonly",
+## summary.method = "medianpolish")
+
+```
+
+
+# fit a ranger model
+
+```{r,  echo=TRUE,  eval=FALSE}
+library(ranger)
+rf1 <-ranger(y=y.numeric ,x=smoking_data,importance="impurity",seed=123, num.trees = 10000,
+             classification=TRUE)
+t2 <-count_variables(rf1)
+imp<-log(rf1$variable.importance)
+#png("./supp_figures/smoking_log_importances.png")
+plot(density(imp),xlab="log importances",main="")
+#dev.off()
+
+```
+
+<!-- ```{r log_importances, echo=FALSE, fig.cap="", fig.align="center", out.width = '50%'} -->
+<!-- #knitr::include_graphics("./supp_figures/smoking_log_importances.png") -->
+<!-- knitr::include_graphics("./supp_figures/smoking_data_determine_cutoff.png") -->
+
+<!-- ``` -->
+
+```{r simulation2, echo=FALSE, fig.cap="A small simulated data set. Each band contains blocks of size {1, 2, 4, 8, 16, 32, 64}, and each block consists of correlated (identical variables).", fig.align="center", out.width = '50%'}
+knitr::include_graphics("./supp_figures/smoking_log_importances.png")
+
+```
+
+
+# Determine a cutoff to get a unimodal density.
+
+See \@ref(fig:log_importances) for the log importances. They are clearly multimodal and we try to determine a cutoff so
+that we are left with a unimodal distribution.
+
+```{r ,echo=TRUE, eval=FALSE}
+cutoffs <- c(2,3,4,5)
+#png("./supp_figures/smoking_data_determine_cutoff.png")
+res.con<- determine_cutoff(imp,t2,cutoff=cutoffs,plot=c(2,3,4,5))
+#dev.off()
+
+#png("./supp_figures/smoking_data_determine_cutoffs_2.png")
+plot(cutoffs,res.con[,3],pch=15,col="red",cex=1.5,ylab="max(abs(y - t1))")
+#dev.off()
+cutoffs[which.min(res.con[,3])]
+
+```
+
+<!-- ```{r smoking_data_determine_cutoff, echo=FALSE, fig.align="center", fig.show='hold', fig.cap="", out.width = '40%', out.height = '40%'} -->
+<!-- knitr::include_graphics("./supp_figures/smoking_data_determine_cutoff.png") -->
+<!-- knitr::include_graphics("./supp_figures/smoking_data_determine_cutoffs_2.png") -->
+
+<!-- ``` -->
+
+<!-- why cant I get them side by side -->
+<!-- https://stackoverflow.com/questions/25415365/insert-side-by-side-png-images-using-knitr -->
+
+
+
+
+# fit RFlocalfdr
+
+We select a cutoff of 3 and fit the RFlocalfdr model
+
+```{r , echo=TRUE,eval=FALSE}
+temp<-imp[t2 > 3]
+temp <- temp - min(temp) + .Machine$double.eps
+qq <- plotQ(temp,debug.flag = 1)
+ppp<-run.it.importances(qq,temp,debug.flag = 0)
+
+
+png("./supp_figures/smoking_significant_genes.png")
+#aa<-significant.genes(ppp,temp,cutoff=0.05,do.plot=1)
+aa<-significant.genes(ppp,temp,cutoff=0.05,debug.flag=0,do.plot=TRUE,use_95_q=TRUE)
+dev.off()
+length(aa$probabilities) # 17
+
+aa<-significant.genes(ppp,temp,cutoff=0.05,debug.flag=0,do.plot=TRUE,use_95_q=FALSE)
+length(aa$probabilities) # 19
+
+
+
+```
+The option **do.plot=1** returns a plot containing the
+
+- histogram of the importances in magenta
+- fdr in black                     -- axis scale on right
+- alpha value for significance --   axis scale on right
+
+
+The option **do.plot=2** returns the same plot with the addition of 
+
+- fitted curve using estimates_C_0.95 in red
+- 0.95 quantile of the fitted distribution, also in red
+- cutoff for significant genes (in orange)
+- abline(v = object$C_0.95, lwd = 2, col = "blue")   what are these
+- abline(v = object$cc, lwd = 2, col = "purple")
+
+<!-- ```{r smoking_significant_genes, echo=FALSE, fig.cap="", fig.align="center", out.width = '50%'} -->
+<!-- knitr::include_graphics("./supp_figures/smoking_significant_genes.png") -->
+
+<!-- ``` -->
+
+
+```{r , echo=TRUE,eval=FALSE}
+sessionInfo()
+
+```
+
+```{r , echo=TRUE,eval=FALSE}
+devtools::install_github("parsifal9/RFlocalfdr", build_vignettes = TRUE, force = TRUE)
+
+library(RFlocalfdr)
+data(smoking)
+?smoking 
+y<-smoking$y
+smoking_data<-smoking$rma
+y.numeric <-ifelse((y=="never-smoked"),0,1)
+
+library(ranger)
+rf1 <-ranger(y=y.numeric ,x=smoking_data,importance="impurity",seed=123, num.trees = 10000,
+             classification=TRUE)
+t2 <-count_variables(rf1)
+imp<-log(rf1$variable.importance)
+#png("./supp_figures/smoking_log_importances.png")
+plot(density(imp),xlab="log importances",main="")
+#dev.off()
+
+
+
+cutoffs <- c(2,3,4,5)
+#png("./supp_figures/smoking_data_determine_cutoff.png")
+res.con<- determine_cutoff(imp,t2,cutoff=cutoffs,plot=c(2,3,4,5))
+#dev.off()
+
+#png("./supp_figures/smoking_data_determine_cutoffs_2.png")
+plot(cutoffs,res.con[,3],pch=15,col="red",cex=1.5,ylab="max(abs(y - t1))")
+#dev.off()
+cutoffs[which.min(res.con[,3])]
+
+
+temp<-imp[t2 > 3]
+temp <- temp - min(temp) + .Machine$double.eps
+qq <- plotQ(temp,debug.flag = 1)
+ppp<-run.it.importances(qq,temp,debug.flag = 0)
+
+
+#png("./supp_figures/smoking_significant_genes.png")
+#aa<-significant.genes(ppp,temp,cutoff=0.05,do.plot=1)
+aa<-significant.genes(ppp,temp,cutoff=0.05,debug.flag=0,do.plot=TRUE,use_95_q=TRUE)
+#dev.off()
+length(aa$probabilities) # 17  -- Roc gets 30
+
+aa<-significant.genes(ppp,temp,cutoff=0.05,debug.flag=0,do.plot=TRUE,use_95_q=FALSE)
+length(aa$probabilities) # 19-- Roc gets 30
+
+```
+
+
