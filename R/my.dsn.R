@@ -5,7 +5,7 @@
 #' See \url{https://en.wikipedia.org/wiki/Skew_normal_distribution} for discussion of the skew-normal.
 #' Using the appromimation of Ashour, Samir K. and Abdel-hameed, Mahmood A.
 #' "Approximate Skew Normal Distribution", Journal of Advanced Research, 2010, 1:4.
-#' It accepts the parameters xi, omega, lambda (Ashour et. al. 2010). Other foumulations may use
+#' It accepts the parameters xi, omega, lambda (Ashour et. al. 2010). Other formulations may use
 #' different parameterizations. The sn (skew-normal) package incluse the extended skew-normal (ESN) distribution. For the SN the
 #' tau parameter is 0.
 #'
@@ -47,7 +47,7 @@
 #'
 #' #dsn, qsn and psn are wrappers around the provided functions provided by sn. This is done to
 #' # overcome some checking done by fitdistrplus
-#' \donttest{
+#' \dontrun{
 #' library(sn)
 #' getAnywhere("dsn")
 #' RFlocalfdr::my.test1fun("sn::dsn", list(xi = -Inf, omega =1, alpha=0 ), fix.arg = list(tau = 0))
@@ -63,21 +63,53 @@
 #' }
 
 
-
-
-my.dsn<-function(x,xi=0, omega = 1,lambda=1){
+my.dsn <- function(x, xi=0, omega=1, lambda=1) {
+    if(abs(lambda) > 5) {
+        warning("The approximation may be unreliable for |lambda| > 5")
+    }
+    
+    # For negative lambda, reflect x around xi and use |lambda|
+    if(lambda < 0) {
+        return(my.dsn(2*xi - x, xi=xi, omega=omega, lambda=abs(lambda)))
+    }
+    
     z <- (x - xi)/omega
-    aa<- (1/sqrt(2*pi))*exp(-z^2/2)
-    bb<- 1/3*lambda^3*z^3
+    aa <- (1/sqrt(2*pi))*exp(-z^2/2)
+    bb <- 1/3*lambda^3*z^3
     cc <- 3*lambda^2*z^2
-    hx<-
-        ifelse( (z < -3/lambda),0,
-        ifelse((z < -1/lambda),(1/8)*aa*(9*lambda*z + cc+ bb+9),
-        ifelse( (z  < 1/lambda), (1/4)*aa*(3*lambda*z + bb + 4),
-        ifelse( (z < 3/lambda), (1/8)*aa*(9*lambda*z -cc +bb+7),sqrt(2/pi)*exp(-z^2/2)
-        ))))
+    
+    # Initialize output vector
+    hx <- numeric(length(x))
+    
+    # Fill in values for each region
+    idx_1 <- z < -3/lambda
+    idx_2 <- z >= -3/lambda & z < -1/lambda
+    idx_3 <- z >= -1/lambda & z < 1/lambda
+    idx_4 <- z >= 1/lambda & z < 3/lambda
+    idx_5 <- z >= 3/lambda
+    
+    hx[idx_1] <- 0  # Changed from .Machine$double.xmin to 0
+    hx[idx_2] <- (1/8)*aa[idx_2]*(9*lambda*z[idx_2] + cc[idx_2] + bb[idx_2] + 9)
+    hx[idx_3] <- (1/4)*aa[idx_3]*(3*lambda*z[idx_3] + bb[idx_3] + 4)
+    hx[idx_4] <- (1/8)*aa[idx_4]*(9*lambda*z[idx_4] - cc[idx_4] + bb[idx_4] + 7)
+    hx[idx_5] <- sqrt(2/pi)*exp(-z[idx_5]^2/2)  # Fixed this line
+    
     (1/omega)*hx
 }
+
+## my.dsn<-function(x,xi=0, omega = 1,lambda=1){
+##     z <- (x - xi)/omega
+##     aa<- (1/sqrt(2*pi))*exp(-z^2/2)
+##     bb<- 1/3*lambda^3*z^3
+##     cc <- 3*lambda^2*z^2
+##     hx<-
+##         ifelse( (z < -3/lambda),0,
+##         ifelse((z < -1/lambda),(1/8)*aa*(9*lambda*z + cc+ bb+9),
+##         ifelse( (z  < 1/lambda), (1/4)*aa*(3*lambda*z + bb + 4),
+##         ifelse( (z < 3/lambda), (1/8)*aa*(9*lambda*z -cc +bb+7),sqrt(2/pi)*exp(-z^2/2)
+##         ))))
+##     (1/omega)*hx
+## }
 
 #' @rdname my.dsn 
 dsn<-function(x, xi = 0, omega = 1, alpha = 0, tau = 0){

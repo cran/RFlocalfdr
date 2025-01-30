@@ -1,0 +1,14 @@
+RFlocalfdr v0.9  (Release date: 2025-1-29)
+==============
+
+Changes:
+
+* modified to work with a new release of  fitdistrplus
+* vignette simulated.Rmd expanded
+
+RFlocalfdr v0.8.5 (Release date: 2023-11-09)
+==============
+
+Changes:
+
+* Initial Release

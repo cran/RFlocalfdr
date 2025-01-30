@@ -42,13 +42,19 @@ y.numeric <-ifelse((y=="never-smoked"),0,1)
 ```
 
 ```{r, echo=FALSE, eval=FALSE}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("GEOquery")
+BiocManager::install("annotate")
+
 install.packages("geneExpressionFromGEO")
 library(geneExpressionFromGEO)
 DF1 <- getGeneExpressionFromGEO("GSE994", FALSE, FALSE)  #retrieveGeneSymbols, verbose = FALSE)
 
 aa<-match(gsub("([A-Z0-9]*).*","\\1", rownames(smoking_data)), colnames(DF1))
 all.equal(aa,1:57)
-$[1] TRUE
+#[1] TRUE
 
 temp <- t(DF1[1:57])
 #but class temp is a data.frame not a ‘AffyBatch’ object. So how do we normalize it?
@@ -78,6 +84,28 @@ plot(density(imp),xlab="log importances",main="")
 #dev.off()
 
 ```
+
+```{r,  echo=TRUE,  eval=FALSE}
+# starting from a randomForest model
+library(RFlocalfdr)
+library(randomForest)
+sert.seed(123)
+rf2 <-randomForest(y=factor(y.numeric) ,x=smoking_data,importance=TRUE, ntree = 10000)
+imp.rf2 <- log(rf2$importance[,"MeanDecreaseGini"])
+t2.rf2 <-varUsed(rf2)
+plot(density(imp.rf2),xlab="log importances",main="")
+
+cutoffs <- c(2,3,4,5)
+res.con<- determine_cutoff(imp.rf2,t2.rf2 ,cutoff=cutoffs,plot=c(2,3,4,5))
+
+plot(cutoffs,res.con[,3],pch=15,col="red",cex=1.5,ylab="max(abs(y - t1))")
+cutoffs[which.min(res.con[,3])]
+#2
+
+
+```
+
+
 
 <!-- ```{r log_importances, echo=FALSE, fig.cap="", fig.align="center", out.width = '50%'} -->
 <!-- #knitr::include_graphics("./supp_figures/smoking_log_importances.png") -->
@@ -132,16 +160,14 @@ qq <- plotQ(temp,debug.flag = 1)
 ppp<-run.it.importances(qq,temp,debug.flag = 0)
 
 
-png("./supp_figures/smoking_significant_genes.png")
+#png("./supp_figures/smoking_significant_genes.png")
 #aa<-significant.genes(ppp,temp,cutoff=0.05,do.plot=1)
 aa<-significant.genes(ppp,temp,cutoff=0.05,debug.flag=0,do.plot=TRUE,use_95_q=TRUE)
-dev.off()
+#dev.off()
 length(aa$probabilities) # 17
 
 aa<-significant.genes(ppp,temp,cutoff=0.05,debug.flag=0,do.plot=TRUE,use_95_q=FALSE)
 length(aa$probabilities) # 19
-
-
 
 ```
 The option **do.plot=1** returns a plot containing the
